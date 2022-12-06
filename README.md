@@ -1,2 +1,5 @@
-# nyc-energy-maps
- 
+# NYC Energy Maps 
+
+
+## License 
+MIT License
