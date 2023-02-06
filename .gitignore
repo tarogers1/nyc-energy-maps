@@ -16,7 +16,6 @@ web/dist-ssr
 web/*.local
 
 web/.env
-web/.env
 
 # Editor directories and files
 .vscode/*
