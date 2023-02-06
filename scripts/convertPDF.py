@@ -113,4 +113,4 @@ def to_csv(txt_path, headers, csv_path):
 
 # test()
 # read_file(pdf_path)
-to_csv(txt_path=txt_path, headers=["10 Digit BBl", "Street Number", "Street Name", "DOF Gross Square Footage", "Energy Start 1-100 Score", "Energy Efficiency Grade"], csv_path=csv_path)
+to_csv(txt_path=txt_path, headers=["10DigitBBl", "StreetNumber", "StreetName", "DOFGrossSquareFootage", "EnergyStar1-100Score", "EnergyEfficiencyGrade"], csv_path=csv_path)

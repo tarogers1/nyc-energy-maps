@@ -1,24 +1,22 @@
-# Logs
-frontend/logs
-frontend/*.log
-frontend/npm-debug.log*
-frontend/yarn-debug.log*
-frontend/yarn-error.log*
-frontend/pnpm-debug.log*
-frontend/lerna-debug.log*
-
-# Frontend
-frontend/node_modules
-frontend/dist
-frontend/dist-ssr
-frontend/*.local
-
 # Scripts
 scripts/.ipynb_checkpoints
 
-# Server
-server/.venv
-server/__pycache__
+# Logs
+web/logs
+web/*.log
+web/npm-debug.log*
+web/yarn-debug.log*
+web/yarn-error.log*
+web/pnpm-debug.log*
+web/lerna-debug.log*
+
+web/node_modules
+web/dist
+web/dist-ssr
+web/*.local
+
+web/.env
+web/.env
 
 # Editor directories and files
 .vscode/*
