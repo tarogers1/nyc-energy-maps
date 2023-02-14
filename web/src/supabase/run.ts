@@ -6,4 +6,4 @@ export const sb = new SupabaseController(sb_config.url, sb_config.key);
 const run_sb = async () => {
 };
 
-export default run_sb();
+export default run_sb;

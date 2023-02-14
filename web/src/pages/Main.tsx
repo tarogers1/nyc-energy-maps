@@ -1,11 +1,10 @@
 import React from "react";
-import "../styles/Main.css";
-import NavBar from "../components/NavBar";
+import Nav from "../components/Nav";
 
 const Main: React.FC = () => {
 	return (
 		<div id="container">
-			<NavBar />
+			<Nav />
 		</div>
 	);
 };
