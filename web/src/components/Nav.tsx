@@ -1,6 +1,6 @@
 import React, { MouseEventHandler, useState } from "react";
 import NavLinkBtn from "./NavLinkBtn";
-import "../styles/Nav.module.css";
+import navStyles from "../styles/Nav.module.css";
 
 interface NavBarProps {}
 
@@ -12,8 +12,8 @@ const Nav: React.FC<NavBarProps> = ({ }) => {
 	};
 
 	return (
-		<div className="sidenav">
-			<div className="dropdown-btn" onClick={handleClick}>
+		<div className={navStyles.sidenav}>
+			<div className={navStyles.dropdownBtn} onClick={handleClick}>
 				{ show ?
 					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
 					     stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
@@ -32,7 +32,7 @@ const Nav: React.FC<NavBarProps> = ({ }) => {
 				}
 			</div>
 			{ show &&
-				<div className="dropdown-container">
+				<div className={navStyles.dropdownOptionsContainer}>
 					<NavLinkBtn value="Main" linkTo="/" />
 					<NavLinkBtn value="Laws" linkTo="/laws" />
 					<NavLinkBtn value="About" linkTo="/about" />
