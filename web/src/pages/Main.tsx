@@ -1,8 +1,9 @@
 import React from "react";
 import Map from "../components/Map";
+import { IBuildingsGJSON } from "../types/IBuildingsGJSON";
 
 interface MainProps {
-	buildings_gjson: any;
+	buildings_gjson: IBuildingsGJSON;
 }
 
 const Main: React.FC<MainProps> = ({ buildings_gjson }) => {

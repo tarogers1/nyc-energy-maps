@@ -1,57 +1,59 @@
 import React, { useEffect, useState } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import axios from "axios";
 import Main from "./pages/Main";
 import Laws from "./pages/Laws";
 import About from "./pages/About";
 import NotFound from "./pages/NotFound";
 import Nav from "./components/Nav";
-import { IBGJAPIDATA, IBuildingsGJSON } from "./types/IBuildingsGJSON";
+import { supabase_client as supabase } from "./supabase/client";
+import { IBuildingsGJSON } from "./types/IBuildingsGJSON";
 
-const buildingsGSJONURL: string = "https://data.cityofnewyork.us/resource/qb5r-6dgf.json";
+const App: React.FC = () => {
+	const [buildingsGJSON, setBuildingsGJSON] = useState<any>(null);
+	const [buildingsGJSONLoaded, setBuildingsGJSONLoaded] = useState(false);
+	const [data, setData] = useState<[] | null>(null);
+	const [dataLoaded, setDataLoaded] = useState<boolean>(false);
 
-const App = () => {
-	const [buildingsGJSON, setBuildingsJSON] = useState<any>(null);
-	const [loadedData, setLoadedData] = useState<boolean>(false);
+	const columns = ["10_Digit_BBL", "Street_Number", "Street_Name", "Energy_Efficiency_Grade", "Energy_Star_1-100_Score"];
 
 	useEffect(() => {
-		const fetchData = async () => {
-			const res = await axios.get(buildingsGSJONURL);
-			let obj: IBuildingsGJSON = {
-				"type": "FeatureCollection",
-				"features": []
-			};
+		const getSupabase = async () => {
+			const res = await supabase
+				.from("energy_disclosure_2020")
+				.select(columns.join(","));
+			if (res.error) throw(res.error);
 
-			const data: IBGJAPIDATA[] = res.data;
-			data.forEach((entry: IBGJAPIDATA) => {
-				obj.features.push({
-					type: "Feature",
-					properties: {
-						bin: entry.bin,
-						cnstrct_yr: entry.cnstrct_yr,
-						lstmoddate: entry.lstmoddate,
-						lststatype: entry.lststatype,
-						doitt_id: entry.doitt_id,
-						heightroof: entry.heightroof,
-						feat_code: entry.feat_code,
-						groundelev: entry.groundelev,
-						shape_area: entry.shape_area,
-						shape_len: entry.shape_len,
-						base_bbl: entry.base_bbl,
-						mpluto_bbl: entry.mpluto_bbl,
-						geomsource: entry.geomsource
-					},
-					geometry: entry.the_geom
-				});
-			});
-
-			console.log(obj.features.length);
-
-			setBuildingsJSON(obj);
+			// @ts-ignore
+			setData(res);
 		};
 
-		fetchData().then(() => setLoadedData(true));
+		getSupabase().then(() => setDataLoaded(true));
+
+		const getGJSON = async () => {
+			const res = await supabase
+				.from("geojson_lookup") 
+				.select("GeoJSON");
+			if (res.error) throw(res.error);
+
+			let obj: IBuildingsGJSON = {
+				type: "FeatureCollection",
+				features: [] 
+			};
+
+			for (let i = 0; i < res.data.length; i++) {
+				const curr = res.data[i]["GeoJSON"];
+				if (!curr["features"] || curr["features"].length === 0) {
+					continue;
+				}
+				obj.features.push(curr["features"][0]);
+			}
+
+			setBuildingsGJSON(obj);
+		};
+
+		getGJSON().then(() => setBuildingsGJSONLoaded(true));
 	}, []);
+
 
 	return (
 		<Router>

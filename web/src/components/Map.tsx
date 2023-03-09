@@ -1,12 +1,14 @@
 import React, { useEffect, useState, useRef } from "react";
 import mapboxgl from "mapbox-gl";
 import { mb_config as config } from "../mapbox/config";
-import mapStyles from "../styles/Map.module.css";
+import "mapbox-gl/dist/mapbox-gl.css";
+import "../styles/Map.css";
+import { IBuildingsGJSON } from "../types/IBuildingsGJSON";
 
 mapboxgl.accessToken = config.token;
 
 interface MapProps {
-	buildings_gjson: any;
+	buildings_gjson: IBuildingsGJSON;
 }
 
 const Map: React.FC<MapProps> = ({ buildings_gjson }) => {
@@ -22,35 +24,23 @@ const Map: React.FC<MapProps> = ({ buildings_gjson }) => {
 			container: mapContainer.current,
 			style: "mapbox://styles/mapbox/light-v11",
 			center: [lng, lat],
-			zoom: zoom
+			zoom: zoom,
+			minZoom: 10,
+			maxZoom: 16
 		});
 	}, []);
 
 	useEffect(() => {
 		if (!map.current || !buildings_gjson) return;
+		console.log(buildings_gjson);
 
 		map.current.on("load", () => {
 			if (!map.current) return;
 
 			map.current.addSource("buildings",  {
 				"type": "geojson",
+				// @ts-ignore
 				"data": buildings_gjson
-			});
-
-			map.current.addLayer({
-				"id": "building-fills",
-				"type": "fill",
-				"source": "buildings",
-				"layout": {},
-				"paint": {
-					"fill-color": "#627BC1",
-					"fill-opacity": [
-						"case",
-						["boolean", ["feature-state", "hover"], false],
-						1,
-						0.5
-					]
-				}
 			});
 
 			map.current.addLayer({
@@ -65,11 +55,22 @@ const Map: React.FC<MapProps> = ({ buildings_gjson }) => {
 			});
 		});
 
+		map.current.on("move", () => {
+			// @ts-ignore
+			setLng(map.current.getCenter().lng.toFixed(4));
+			// @ts-ignore
+			setLat(map.current.getCenter().lat.toFixed(4));
+			// @ts-ignore
+			setZoom(map.current.getZoom().toFixed(2));
+		});
 	}, [buildings_gjson]);
 
 	return (
 		<div>
-			<div ref={mapContainer} id="map-container"></div>
+			<div className="sidebar">
+				Longitude: {lng} | Latitude: {lat} | Zoom: {zoom}
+			</div>
+			<div ref={mapContainer} className="map-container"></div>
 		</div>
 	);
 };
