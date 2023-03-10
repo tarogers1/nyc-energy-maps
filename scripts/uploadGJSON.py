@@ -22,7 +22,7 @@ def main():
     bbl = e["10_Digit_BBL"]
     r = requests.get(SODA_URL + "?base_bbl=" + str(bbl))
     gjson = r.json()
-    supabase.table("geojson_lookup").insert({"10_Digit_BBL" : bbl, "GeoJSON" : gjson }).execute()
+    supabase.table("geojson_lookup_full").insert({"10_Digit_BBL" : bbl, "GeoJSON" : gjson }).execute()
     print("Inserted building {}".format(bbl))
 
   print("Function complete")
