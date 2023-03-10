@@ -65,7 +65,7 @@ const App: React.FC = () => {
 				<Route path="*" element={ <NotFound /> } />
 			</Routes>
 		</Router>
-	)
+	);
 };
 
 export default App;
