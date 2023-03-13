@@ -1,15 +1,20 @@
 import React from "react";
 import Map from "../components/Map";
-import { IBuildingsGJSON } from "../types/IBuildingsGJSON";
+import { IBuildingData } from "../types/IBuildingData";
+import mainStyles from "../styles/Main.module.css";
+import SearchBar from "../components/SearchBar";
 
 interface MainProps {
-	buildings_gjson: IBuildingsGJSON;
+	data: IBuildingData[]; 
 }
 
-const Main: React.FC<MainProps> = ({ buildings_gjson }) => {
+const Main: React.FC<MainProps> = ({ data }) => {
 	return (
-		<div id="container">
-			<Map buildings_gjson={buildings_gjson} />
+		<div className={mainStyles.container}>
+			<div className={mainStyles.topBar}>
+				<SearchBar placeholder="Search for a building by address..." />
+			</div>
+			<Map data={data} />
 		</div>
 	);
 };

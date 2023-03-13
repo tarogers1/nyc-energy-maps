@@ -19,7 +19,7 @@ with open("../keys/supabase_key.txt", "r") as f:
 def main():
   supabase: Client = create_client(url, key)
 
-  bres = supabase.table("geojson_lookup_full").select("*").execute()
+  bres = supabase.table("geojson_lookup_full").select("*").execute() # table currently nonexistent
   data = bres.data
 
   for x in data:

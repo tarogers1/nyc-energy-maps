@@ -2,6 +2,7 @@ export interface IBuildingFeature {
 	type: string;
 	properties: {
 		bin: string;
+		eescore: number;
 		cnstrct_yr: string;
 		lstmoddate: string;
 		lststatype: string;
