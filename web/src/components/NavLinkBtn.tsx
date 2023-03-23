@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import "../styles/NavLinkBtn.module.css";
+import { Text } from "@chakra-ui/react";
 
 interface NavLinkProps {
 	value: string;
@@ -10,7 +10,7 @@ interface NavLinkProps {
 const NavLinkBtn: React.FC<NavLinkProps> = ({ value, linkTo}) => {
 	return (
 		<>
-			<Link to={linkTo}><div className="nav-link-btn">{value}</div></Link>
+			<Link to={linkTo}><Text>{value}</Text></Link>
 		</>
 	);
 };
