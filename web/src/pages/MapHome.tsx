@@ -10,7 +10,7 @@ interface MainProps {
 	data: IBuildingData[]; 
 }
 
-const Main: React.FC<MainProps> = ({ data }) => {
+const MapHome: React.FC<MainProps> = ({ data }) => {
 	const [names, setNames] = useState<Pair<string, number>[]>([]);
 	const [buildingSelected, setBuildingSelected] = useState<number | null>(null);
 
@@ -38,4 +38,4 @@ const Main: React.FC<MainProps> = ({ data }) => {
 	);
 };
 
-export default Main;
+export default MapHome;

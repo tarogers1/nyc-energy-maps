@@ -13,10 +13,11 @@ import {
 	HStack,
 	ButtonGroup,
 	Button, 
+	Select,
+	Textarea,
 	useColorModeValue
 } from "@chakra-ui/react";
 import { supabase_client as supabase } from "../supabase/client";
-import Pair from "../utils/Pair";
 import InputChangeEvent from "../types/InputChangeEvent";
 
 
@@ -24,14 +25,26 @@ const Contact: React.FC = () => {
 	const [fname, setFName] = useState<string>("");
 	const [lname, setLName] = useState<string>("");
 	const [email, setEmail] = useState<string>(""); 
+	const [message, setMessage] = useState<string>("");
+	const [validatingInfo, setValidatingInfo] = useState(false);
 
-	const validateEmail: (args: string) => boolean = (email: string) => {
-		if (/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/.test(email)) {
-			return true;
-		}
+	const emailFormat = /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+	const validEmail = emailFormat.test(email);
 
-		return false;
-	}; 
+	useEffect(() => {
+	}, [email]);
+
+	const validateData = () => {
+
+	};
+
+	const uploadData = async () => {
+
+	};
+
+	const handleSubmit = () => {
+		setValidatingInfo(true);
+	};
 
 	return (
 		<Flex width="full" justify="center" align="center">
@@ -60,11 +73,31 @@ const Contact: React.FC = () => {
         	      </FormControl>
        	      </Box>
       	    </HStack>
-						<FormControl isRequired>
-							<FormLabel>
-								Email address
-							</FormLabel>
+						<FormControl isRequired isInvalid={!validEmail}>
+							<FormLabel>Email address</FormLabel>
 							<Input type="email" placeholder="john.doe@example.com" value={email} onChange={(e: InputChangeEvent) => setEmail(e.target.value)}/>
+							{ !validEmail && ( 
+								<FormErrorMessage>
+									Email address invalid
+								</FormErrorMessage>
+							)}
+						</FormControl>
+						<FormControl>
+							<FormLabel>Best describes you</FormLabel>
+							<Select placeholder="Select option">
+								<option>Student</option>
+								<option>Developer</option>
+								<option>Government Official</option>
+								<option>Other</option>
+							</Select>
+						</FormControl>
+						<FormControl>
+							<FormLabel>Message:</FormLabel>
+							<Textarea 
+								value={message} 
+								onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setMessage(e.target.value)}
+								placeholder="Enter your message here..."		
+							/>
 						</FormControl>
 						<Stack spacing={10} pt={2}>
 							<ButtonGroup spacing={4}>
@@ -74,6 +107,7 @@ const Contact: React.FC = () => {
 									bg="blue.400"
 									color="white"
 									_hover={{ bg: "blue.500" }}
+									onClick={handleSubmit}
               	>
                 	Submit
               	</Button>

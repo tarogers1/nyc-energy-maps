@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Main from "./pages/Main";
+import MapHome from "./pages/MapHome";
 import Laws from "./pages/Laws";
 import About from "./pages/About";
 import NotFound from "./pages/NotFound";
@@ -26,7 +26,7 @@ const App: React.FC = () => {
 		<BrowserRouter>
 			<Nav />
 			<Routes>
-				<Route index element={ <Main data={data} /> } />
+				<Route index element={ <MapHome data={data} /> } />
 				<Route path="/laws" element={ <Laws /> } />
 				<Route path="/about" element={ <About /> } />
 				<Route path="/contact" element={ <Contact /> } />
