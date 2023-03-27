@@ -11,7 +11,7 @@ const FilterBar: React.FC<FilterBarProps> = ({}) => {
 	const handleCloseClick = () => setShow(false);
 
 	return (
-		<Box zIndex={1}>
+		<Box position="absolute" right="0px" verticalAlign="middle" zIndex={1}>
 			{show ? (
 				<Flex>
 					<ArrowRightIcon onClick={handleCloseClick} />
