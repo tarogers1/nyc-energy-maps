@@ -11,40 +11,61 @@ import { Box } from "@chakra-ui/react";
 import { mb_config as config } from "../../mapbox/config";
 import { IBuildingFeature, IBuildingsGJSON } from "../../types/IBuildingsGJSON";
 import { IBuildingData } from "../../types/IBuildingData";
+import { supabase_client as supabase } from "../../supabase/client";
 import cmath from "../../utils/cmath";
 
-interface MapProps {
-	data: IBuildingData[]; 
-}
+interface MapGLProps {}
 
-const MapGL: React.FC<MapProps> = ({ data }) => {
+const MapGL: React.FC<MapGLProps> = ({}) => {
+	const [data, setData] = useState<IBuildingData[]>([]);
+
+	useEffect(() => {
+		const fetchData = async () => {
+			const res = await supabase.from("full_table").select("*");
+			if (res.error) throw res.error;
+			setData(res.data);
+		};
+
+		fetchData();
+	}, []);
+
 	const [viewState, setViewState] = useState({
 		longitude: -73.9855,
-		latitude: 40.7580,
+		latitude: 40.758,
 		zoom: 10
 	});
 
 	const [geoB, setGeoB] = useState<IBuildingsGJSON | null>(null);
 	const geoBLayerStyle = {
-		"id": "buildings-layer",
-		"type": "fill",
-		"source": "buildings",
-		"layout": {},
-		"paint": {
+		id: "buildings-layer",
+		type: "fill",
+		source: "buildings",
+		layout: {},
+		paint: {
 			"fill-color": [
 				"interpolate",
 				["linear"],
 				["get", "eescore"],
-				10, "#090178",
-				20, "#0428D9",
-				30, "#0278B8",
-				40, "#0293CC",
-				50, "#03FCEC",
-				60, "#05FACD",
-				70, "#038F3B",
-				80, "#04C97A",
-				90, "#04C451",
-				100, "#00F70C"
+				10,
+				"#090178",
+				20,
+				"#0428D9",
+				30,
+				"#0278B8",
+				40,
+				"#0293CC",
+				50,
+				"#03FCEC",
+				60,
+				"#05FACD",
+				70,
+				"#038F3B",
+				80,
+				"#04C97A",
+				90,
+				"#04C451",
+				100,
+				"#00F70C"
 			]
 		}
 	};
@@ -61,25 +82,24 @@ const MapGL: React.FC<MapProps> = ({ data }) => {
 			const cur = data[i]["GeoBuilding"];
 			if (!cur) continue;
 			const next: IBuildingFeature = {
-				"type": "Feature",
-				"geometry": cur["geometry"],
-				"properties": {
+				type: "Feature",
+				geometry: cur["geometry"],
+				properties: {
 					...cur["properties"],
 					eescore: data[i]["Energy_Star_1-100_Score"]
 				}
-			}
+			};
 			obj.features.push(next);
 		}
 
 		setGeoB(obj);
 	}, [data]);
 
-
 	return (
 		<Box height="100vh" zIndex={-1}>
 			<Map
 				{...viewState}
-				onMove={evt => setViewState(evt.viewState)}
+				onMove={(evt) => setViewState(evt.viewState)}
 				mapStyle="mapbox://styles/mapbox/light-v11"
 				mapboxAccessToken={config.token}
 			>

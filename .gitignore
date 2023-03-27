@@ -19,28 +19,9 @@ web/*.local
 web/.env
 
 # Server
-server/.env
-
-# compiled output
-server/dist
-server/node_modules
-
-# Logs
-server/logs
-server/*.log
-server/npm-debug.log*
-server/pnpm-debug.log*
-server/yarn-debug.log*
-server/yarn-error.log*
-server/lerna-debug.log*
-
-# OS
-server/.DS_Store
-
-# Tests
-server/coverage
-server/.nyc_output
-
+devserver/.env
+dervserver/node_modules
+devserver/dist
 
 # Editor directories and files
 .vscode/*
