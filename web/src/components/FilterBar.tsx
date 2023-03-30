@@ -1,28 +1,49 @@
 import React, { useState } from "react";
-import { Box, Flex } from "@chakra-ui/react";
+import { Box, Flex, useDisclosure } from "@chakra-ui/react";
 import { ArrowLeftIcon, ArrowRightIcon } from "@chakra-ui/icons";
+import { motion } from "framer-motion";
 
 interface FilterBarProps {}
 
 const FilterBar: React.FC<FilterBarProps> = ({}) => {
-	const [show, setShow] = useState(false);
+	const { getDisclosureProps, isOpen, onToggle } = useDisclosure();
+	const [hidden, setHidden] = useState(!isOpen);
 
-	const handleOpenClick = () => setShow(true);
-	const handleCloseClick = () => setShow(false);
+	const WIDTH: number = document.body.offsetWidth * 0.25; // 25vw
+	const BTN_WIDTH = document.getElementById("show_btn")?.offsetWidth || 36;
 
 	return (
-		<Box position="absolute" right="0px" verticalAlign="middle" zIndex={1}>
-			{show ? (
-				<Flex>
-					<ArrowRightIcon onClick={handleCloseClick} />
+		<Flex zIndex={1}>
+			<Box id="show-btn" position="absolute" left="100%" ml="-28px" zIndex={2} top="50%">
+				<motion.div {...getDisclosureProps()} hidden={false} inital={true} animate={{ x: isOpen ? -(WIDTH) : 0 }}>
+					<Box border="2px" p="2px" rounded="lg">
+						{isOpen ? (
+							<ArrowRightIcon w={6} h={6} onClick={onToggle} />
+						) : (
+							<ArrowLeftIcon w={6} h={6} onClick={onToggle} />
+						)}
+					</Box>
+				</motion.div>
+			</Box>
+			<motion.div {...getDisclosureProps()} hidden={hidden} initial={false} 
+				onAnimationStart={() => setHidden(false)}
+				onAnimationComplete={() => setHidden(!isOpen)}
+				animate={{ width: isOpen ? WIDTH : 0 }}
+				style={{
+					background: "red",
+					overflow: "hidden",
+					whiteSpace: "nowrap",
+					position: "absolute",
+					right: "0",
+					height: "100vh",
+					top: "0"
+				}}
+			>
+				<Flex direction="column">
+					Hello World!
 				</Flex>
-			) : (
-				<Box>
-					Hello
-					<ArrowLeftIcon w={6} h={6} onClick={handleOpenClick} />
-				</Box>
-			)}
-		</Box>
+			</motion.div>
+		</Flex>
 	);
 };
 

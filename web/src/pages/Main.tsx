@@ -56,7 +56,7 @@ const Main: React.FC = () => {
 				/>
 			</Flex>
 			<MapGL />
-			{/* <FilterBar /> */}
+			<FilterBar /> {/* position: absolute */}
 		</Box>
 	);
 };
