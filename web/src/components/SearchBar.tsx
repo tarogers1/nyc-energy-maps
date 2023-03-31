@@ -2,23 +2,24 @@ import React, { useState, useEffect } from "react";
 import { Box, Input, Flex, List, ListItem } from "@chakra-ui/react";
 import Pair from "../utils/Pair";
 import isNumeric from "../utils/isNumeric";
+import TBuildingName from "../types/TBuildingName";
 
 interface SearchBarProps {
   placeholder: string;
-  names: Pair<string, number>[];
+  names: TBuildingName[];
   fselected: Function;
 }
 
 const SearchBar: React.FC<SearchBarProps> = ({ placeholder, names }) => {
   const [text, setText] = useState<string>("");
   const [focused, setFocused] = useState<boolean>(false);
-  const [filteredData, setFilteredData] = useState<Pair<string, number>[]>([]);
+  const [filteredData, setFilteredData] = useState<TBuildingName[]>([]);
 
   const onChange = (event: React.ChangeEvent<HTMLInputElement>) => setText(event.target.value);
   const onFocus = () => setFocused(true);
 
   useEffect(() => {
-    const newFilter = names.filter((value: Pair<string, number>) => {
+    const newFilter = names.filter((value: TBuildingName) => {
       const curr = value.first.toLowerCase();
       return curr.includes(text.toLowerCase());
     });
@@ -69,7 +70,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ placeholder, names }) => {
           <>
             { filteredData.length !== 0 ?
               <List>
-                { filteredData.map((value: Pair<string, number>, key: number) => {
+                { filteredData.slice(0, Math.min(filteredData.length, 1000)).map((value: TBuildingName, key: number) => {
                   // format the name of the building
                   let v = value.first.toLowerCase().split(" ");
                   let str: string = "";

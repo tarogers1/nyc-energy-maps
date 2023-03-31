@@ -1,74 +1,41 @@
 import React, { useEffect, useState } from "react";
-import Map, {
-	Source,
-	Layer,
-	FullscreenControl,
-	NavigationControl,
-	ScaleControl
-} from "react-map-gl";
+import Map, { ScaleControl } from "react-map-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
+import DeckGL from "@deck.gl/react/typed";
+import { GeoJsonLayer } from "@deck.gl/layers/typed";
 import { Box } from "@chakra-ui/react";
 import { mb_config as config } from "../../mapbox/config";
+import { supabase_client as supabase } from "../../supabase/client";
+import colorScale from "../../utils/colorScale";
+import getTooltip from "./getTooltip";
 import { IBuildingFeature, IBuildingsGJSON } from "../../types/IBuildingsGJSON";
 import { IBuildingData } from "../../types/IBuildingData";
-import { supabase_client as supabase } from "../../supabase/client";
-import cmath from "../../utils/cmath";
 
 interface MapGLProps {}
 
 const MapGL: React.FC<MapGLProps> = ({}) => {
 	const [data, setData] = useState<IBuildingData[]>([]);
+	const [geoB, setGeoB] = useState<IBuildingsGJSON | null>(null);
+	const [layers, setLayers] = useState<(GeoJsonLayer)[]>([]);
+
+	const initialViewState = {
+		longitude: -73.9855,
+		latitude: 40.758,
+		zoom: 10,
+		maxZoom: 16,
+		minZoom: 9 
+	};
 
 	useEffect(() => {
 		const fetchData = async () => {
 			const res = await supabase.from("full_table").select("*");
 			if (res.error) throw res.error;
+			// @ts-ignore
 			setData(res.data);
 		};
 
 		fetchData();
 	}, []);
-
-	const [viewState, setViewState] = useState({
-		longitude: -73.9855,
-		latitude: 40.758,
-		zoom: 10
-	});
-
-	const [geoB, setGeoB] = useState<IBuildingsGJSON | null>(null);
-	const geoBLayerStyle = {
-		id: "buildings-layer",
-		type: "fill",
-		source: "buildings",
-		layout: {},
-		paint: {
-			"fill-color": [
-				"interpolate",
-				["linear"],
-				["get", "eescore"],
-				10,
-				"#090178",
-				20,
-				"#0428D9",
-				30,
-				"#0278B8",
-				40,
-				"#0293CC",
-				50,
-				"#03FCEC",
-				60,
-				"#05FACD",
-				70,
-				"#038F3B",
-				80,
-				"#04C97A",
-				90,
-				"#04C451",
-				100,
-				"#00F70C"
-			]
-		}
-	};
 
 	useEffect(() => {
 		if (data.length === 0) return;
@@ -95,24 +62,43 @@ const MapGL: React.FC<MapGLProps> = ({}) => {
 		setGeoB(obj);
 	}, [data]);
 
+
+	useEffect(() => {
+		if (!geoB || geoB.features.length === 0) return;
+
+		setLayers([
+			new GeoJsonLayer({
+				id: "geojson-layer", 
+				data: geoB,
+				stroked: false,
+				filled: true,
+				extruded: false, // turns off 3D
+				wireframe: true,
+				// @ts-ignore
+				getFillColor: f => colorScale(f.properties["eescore"]),
+				getLineColor: [255, 255, 255],
+				pickable: true
+			})
+		]);
+
+	}, [geoB]);
+
 	return (
 		<Box height="100vh" zIndex={-1}>
-			<Map
-				{...viewState}
-				onMove={(evt) => setViewState(evt.viewState)}
-				mapStyle="mapbox://styles/mapbox/light-v11"
-				mapboxAccessToken={config.token}
-			>
-				<FullscreenControl position="top-right" />
-				<NavigationControl position="top-right" />
-				<ScaleControl />
-
-				{/* @ts-ignore */}
-				<Source id="ee-ratings" type="geojson" data={geoB}>
-					{/* @ts-ignore */}
-					<Layer {...geoBLayerStyle} />
-				</Source>
-			</Map>
+			<DeckGL
+				layers={layers}
+				initialViewState={initialViewState}
+				controller={true}
+				// @ts-ignore
+				getTooltip={getTooltip}
+			>	
+				<Map
+					mapStyle="mapbox://styles/mapbox/light-v11"
+					mapboxAccessToken={config.token}
+				>
+					<ScaleControl />
+				</Map>
+			</DeckGL>
 		</Box>
 	);
 };

@@ -1,6 +1,7 @@
 import { IBuildingFeature } from "./IBuildingsGJSON";
+import ISA from "./ISA";
 
-export interface IBuildingData {
+export interface IBuildingData extends ISA {
   "10_Digit_BBL": number;
   "Street_Number": string;
   "Street_Name": string;
