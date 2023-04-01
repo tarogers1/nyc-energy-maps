@@ -1,16 +1,15 @@
 import React, { useState, useEffect } from "react";
-import { Box, Input, Flex, List, ListItem } from "@chakra-ui/react";
-import Pair from "../utils/Pair";
-import isNumeric from "../utils/isNumeric";
+import { Box, Input, Flex, List, ListItem, Button } from "@chakra-ui/react";
 import TBuildingName from "../types/TBuildingName";
+import formatAddress from "../utils/formatAddress";
 
 interface SearchBarProps {
   placeholder: string;
   names: TBuildingName[];
-  fselected: Function;
+  selectb: Function; 
 }
 
-const SearchBar: React.FC<SearchBarProps> = ({ placeholder, names }) => {
+const SearchBar: React.FC<SearchBarProps> = ({ placeholder, names, selectb }) => {
   const [text, setText] = useState<string>("");
   const [focused, setFocused] = useState<boolean>(false);
   const [filteredData, setFilteredData] = useState<TBuildingName[]>([]);
@@ -39,8 +38,18 @@ const SearchBar: React.FC<SearchBarProps> = ({ placeholder, names }) => {
 
   // Enter key event handler
   useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // if enter key is pressed, select the first building in the filtered data list 
+      if (e.key !== "Enter") return;
+      if (!filteredData || filteredData.length === 0) return;
+      selectb(filteredData[0].second.first);
+      setText("");
+    };
 
-  }, []);
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [filteredData]);
 
   // Unfocus when click elsewhere
   useEffect(() => {
@@ -71,24 +80,13 @@ const SearchBar: React.FC<SearchBarProps> = ({ placeholder, names }) => {
             { filteredData.length !== 0 ?
               <List>
                 { filteredData.slice(0, Math.min(filteredData.length, 1000)).map((value: TBuildingName, key: number) => {
-                  // format the name of the building
-                  let v = value.first.toLowerCase().split(" ");
-                  let str: string = "";
-                  for (let i = 0; i < v.length; i++) {
-                    let curr = v[i];
-                    if (!isNumeric(curr)) {
-                      curr = curr.charAt(0).toUpperCase() + curr.substring(1);
-                    } else if (curr.charAt(0) == "-") {
-                      curr = curr.charAt(0) + " " + curr.substring(1);
-                    } else if (i > 0) {
-                      if (curr.charAt(curr.length - 1) == "2") curr += "nd";
-                      else curr += "th"
-                    }
-                    str += curr;
-                    if (i < v.length - 1) str += " ";
-                  }
-
-                  return <ListItem key={key}>{str}</ListItem>;
+                  return (
+                    <ListItem key={key} onClick={() => selectb(value.second.first)}>
+                      <Box border="2px" borderColor="black">
+                        {formatAddress(value.first)}
+                      </Box>
+                    </ListItem>
+                  );
                 })}
               </List>
               :

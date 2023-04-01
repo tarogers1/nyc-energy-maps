@@ -6,6 +6,7 @@ import FilterBar from "../components/FilterBar";
 import Pair from "../utils/Pair";
 import { supabase_client as supabase } from "../supabase/client";
 import TBuildingName from "../types/TBuildingName";
+import BuildingInfo from "../components/BuildingInfo";
 
 const Main: React.FC = () => {
 	const [names, setNames] = useState<TBuildingName[]>([]);
@@ -38,15 +39,18 @@ const Main: React.FC = () => {
 		fetchNames();
 	}, []);
 
+	console.log(buildingSelected);
+
 	return (
 		<Box>
 			<Flex position="absolute" w="100%" justify="center" align="center" pt="1vh" pb="1vh" mt="0%" mb="1vh" zIndex={1}>
 				<SearchBar
 					placeholder="Search for a building by address..."
 					names={names}
-					fselected={(bbl: number) => setBuildingSelected(bbl)}
+					selectb={(bbl: number) => setBuildingSelected(bbl)}
 				/>
 			</Flex>
+			{ buildingSelected !== null && <BuildingInfo bbl={buildingSelected} /> }
 			<MapGL />
 			<FilterBar /> {/* position: absolute */}
 		</Box>
