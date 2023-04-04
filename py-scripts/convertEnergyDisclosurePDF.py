@@ -6,7 +6,7 @@ txt_path = "../data/disclosure_2020/ll33_Data_Disclosure_2020-CBL.txt"
 csv_path = "../data/disclosure_2020/ll33_Data_Disclosure_2020-CBL.csv"
 
 def test():
-  print("Test Successful") #el;ajds;flkjads;lfja;lskdfja;ldsjf;asjdlkfjas;ldkfjas;ldfjasdf
+  print("Test Successful") #retard, fuck you
 
 
 def is_grade(str):
