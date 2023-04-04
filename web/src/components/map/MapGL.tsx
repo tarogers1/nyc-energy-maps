@@ -11,20 +11,28 @@ import getTooltip from "./getTooltip";
 import { IBuildingFeature, IBuildingsGJSON } from "../../types/IBuildingsGJSON";
 import { IBuildingData } from "../../types/IBuildingData";
 
-interface MapGLProps {}
+interface MapGLProps {
+	buildingSelected: number | null;
+}
 
-const MapGL: React.FC<MapGLProps> = ({}) => {
-	const [data, setData] = useState<IBuildingData[]>([]);
-	const [geoB, setGeoB] = useState<IBuildingsGJSON | null>(null);
-	const [layers, setLayers] = useState<(GeoJsonLayer)[]>([]);
-
-	const initialViewState = {
-		longitude: -73.9855,
-		latitude: 40.758,
-		zoom: 10,
+const MapGL: React.FC<MapGLProps> = ({ buildingSelected }) => {
+	const zoomBounds = {
 		maxZoom: 16,
 		minZoom: 9 
 	};
+
+	const [data, setData] = useState<IBuildingData[]>([]);
+	const [geoB, setGeoB] = useState<IBuildingsGJSON | null>(null);
+	const [layers, setLayers] = useState<(GeoJsonLayer)[]>([]);
+	const [viewState, setViewState] = useState({
+		longitude: -73.9855,
+		latitude: 40.758,
+		zoom: 10,
+		...zoomBounds,
+		pitch: 0,
+		bearing: 0,
+		transitionDuration: 1000 // set the duration of the transition (in milliseconds)	
+	});
 
 	useEffect(() => {
 		const fetchData = async () => {
@@ -83,11 +91,40 @@ const MapGL: React.FC<MapGLProps> = ({}) => {
 
 	}, [geoB]);
 
+	useEffect(() => {
+		if (!buildingSelected) return;
+
+		const fetchLocation = async () => {
+			const res = await supabase
+				.from("full_table")
+				.select("Latitude,Longitude")
+				.eq("10_Digit_BBL", buildingSelected);
+			
+			if (res.error) throw(res.error);
+
+			const loc: { Latitude: number; Longitude: number; } = res.data[0];
+
+			/*
+			 * move the map to the location of the building
+			 */ 
+			// setViewState({
+			// 	...viewState,
+			// 	latitude: loc.Latitude,
+			// 	longitude: loc.Longitude,
+			// 	zoom: 16, // set to the desired zoom level
+			// });
+		};
+
+		fetchLocation();
+	}, [buildingSelected]);
+
 	return (
 		<Box height="100vh" zIndex={-1}>
 			<DeckGL
 				layers={layers}
-				initialViewState={initialViewState}
+				viewState={viewState}
+				// @ts-ignore
+				onViewStateChange={e => setViewState(e.viewState)}
 				controller={true}
 				// @ts-ignore
 				getTooltip={getTooltip}

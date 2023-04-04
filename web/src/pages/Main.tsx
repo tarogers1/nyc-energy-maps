@@ -39,19 +39,17 @@ const Main: React.FC = () => {
 		fetchNames();
 	}, []);
 
-	console.log(buildingSelected);
-
 	return (
 		<Box>
 			<Flex position="absolute" w="100%" justify="center" align="center" pt="1vh" pb="1vh" mt="0%" mb="1vh" zIndex={1}>
 				<SearchBar
 					placeholder="Search for a building by address..."
 					names={names}
-					selectb={(bbl: number) => setBuildingSelected(bbl)}
+					setBuildingSelected={setBuildingSelected}
 				/>
 			</Flex>
-			{ buildingSelected !== null && <BuildingInfo bbl={buildingSelected} /> }
-			<MapGL />
+			{ buildingSelected !== null && <BuildingInfo bbl={buildingSelected} setBuildingSelected={setBuildingSelected} /> }
+			<MapGL buildingSelected={buildingSelected} />
 			<FilterBar /> {/* position: absolute */}
 		</Box>
 	);

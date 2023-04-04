@@ -6,10 +6,10 @@ import formatAddress from "../utils/formatAddress";
 interface SearchBarProps {
   placeholder: string;
   names: TBuildingName[];
-  selectb: Function; 
+  setBuildingSelected: Function; 
 }
 
-const SearchBar: React.FC<SearchBarProps> = ({ placeholder, names, selectb }) => {
+const SearchBar: React.FC<SearchBarProps> = ({ placeholder, names, setBuildingSelected }) => {
   const [text, setText] = useState<string>("");
   const [focused, setFocused] = useState<boolean>(false);
   const [filteredData, setFilteredData] = useState<TBuildingName[]>([]);
@@ -42,7 +42,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ placeholder, names, selectb }) =>
       // if enter key is pressed, select the first building in the filtered data list 
       if (e.key !== "Enter") return;
       if (!filteredData || filteredData.length === 0) return;
-      selectb(filteredData[0].second.first);
+      setBuildingSelected(filteredData[0].second.first);
       setText("");
     };
 
@@ -81,7 +81,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ placeholder, names, selectb }) =>
               <List>
                 { filteredData.slice(0, Math.min(filteredData.length, 1000)).map((value: TBuildingName, key: number) => {
                   return (
-                    <ListItem key={key} onClick={() => selectb(value.second.first)}>
+                    <ListItem key={key} onClick={() => setBuildingSelected(value.second.first)}>
                       <Box border="2px" borderColor="black">
                         {formatAddress(value.first)}
                       </Box>
