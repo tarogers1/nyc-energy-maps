@@ -20,7 +20,7 @@ web/.env
 
 # Server
 devserver/.env
-dervserver/node_modules
+devserver/node_modules
 devserver/dist
 
 # Editor directories and files
