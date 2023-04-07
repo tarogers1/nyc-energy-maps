@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { Box, Input, Flex, List, ListItem, Button } from "@chakra-ui/react";
+import { Box, InputGroup, InputLeftElement, InputRightElement, Input, Flex, List, ListItem, Button, Center } from "@chakra-ui/react";
+import { SearchIcon } from "@chakra-ui/icons";
 import TBuildingName from "../types/TBuildingName";
 import formatAddress from "../utils/formatAddress";
+import { Home } from "react-feather";
 
 interface SearchBarProps {
   placeholder: string;
@@ -16,6 +18,10 @@ const SearchBar: React.FC<SearchBarProps> = ({ placeholder, names, setBuildingSe
 
   const onChange = (event: React.ChangeEvent<HTMLInputElement>) => setText(event.target.value);
   const onFocus = () => setFocused(true);
+
+  let num = () => {
+    return "hello world";
+  };
 
   useEffect(() => {
     const newFilter = names.filter((value: TBuildingName) => {
@@ -62,17 +68,34 @@ const SearchBar: React.FC<SearchBarProps> = ({ placeholder, names, setBuildingSe
     return () => document.removeEventListener("pointerdown", handlePointerDown);
   }, []);
 
+  const handleSearchBtnClicked = () => {
+    if (!focused || !filteredData || filteredData.length == 0) return;
+    setBuildingSelected(filteredData[0].second.first);
+    setFocused(false);
+  };
+
   return (
-    <Box userSelect="none">
-      <Flex direction="row">
-        <Input
-          backgroundColor="white"
-          onChange={onChange}
-          onFocus={onFocus}
-          value={text}
-          type="text"
-          placeholder={placeholder}
-        />
+    <Box userSelect="none" onPointerDown={(event: React.PointerEvent<HTMLDivElement>) => event.stopPropagation()}>
+      <Flex>
+        <InputGroup>
+          <InputLeftElement children={ <Home size={20} /> } />
+          <Input
+            backgroundColor="whitesmoke"
+            _hover={{
+              backgroundColor: "gray.100"
+            }}
+            roundedTopRight="none"
+            roundedBottomRight="none"
+            onChange={onChange}
+            onFocus={onFocus}
+            value={text}
+            type="text"
+            placeholder={placeholder}
+          />
+        </InputGroup>
+        <Center p="0.5vmax" roundedTopRight="lg" roundedBottomRight="rg" _hover={{ cursor: "pointer" }} backgroundColor="gray.300">
+          <SearchIcon w={4} h={4} />
+        </Center>
       </Flex>
       <Box>
         { text.length !== 0 && focused &&

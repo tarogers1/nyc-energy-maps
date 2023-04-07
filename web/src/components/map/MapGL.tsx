@@ -18,7 +18,7 @@ interface MapGLProps {
 const MapGL: React.FC<MapGLProps> = ({ buildingSelected }) => {
 	const zoomBounds = {
 		maxZoom: 16,
-		minZoom: 9 
+		minZoom: 9.5  
 	};
 
 	const [data, setData] = useState<IBuildingData[]>([]);
