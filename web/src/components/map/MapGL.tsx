@@ -2,20 +2,23 @@ import React, { useEffect, useState } from "react";
 import Map, { ScaleControl } from "react-map-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import DeckGL from "@deck.gl/react/typed";
-import { GeoJsonLayer } from "@deck.gl/layers/typed";
+import { GeoJsonLayer, PolygonLayer } from "@deck.gl/layers/typed";
 import { Box } from "@chakra-ui/react";
 import { mb_config as config } from "../../mapbox/config";
 import { supabase_client as supabase } from "../../supabase/client";
 import colorScale from "../../utils/colorScale";
 import getTooltip from "./getTooltip";
+import Pair from "../../utils/Pair";
 import { IBuildingFeature, IBuildingsGJSON } from "../../types/IBuildingsGJSON";
 import { IBuildingData } from "../../types/IBuildingData";
+import calculateAverage from "../../supabase/calculateAverage";
 
 interface MapGLProps {
 	buildingSelected: number | null;
+  inSelectAreaMode: boolean;
 }
 
-const MapGL: React.FC<MapGLProps> = ({ buildingSelected }) => {
+const MapGL: React.FC<MapGLProps> = ({ buildingSelected, inSelectAreaMode }) => {
 	const zoomBounds = {
 		maxZoom: 16,
 		minZoom: 9.5  
@@ -23,7 +26,7 @@ const MapGL: React.FC<MapGLProps> = ({ buildingSelected }) => {
 
 	const [data, setData] = useState<IBuildingData[]>([]);
 	const [geoB, setGeoB] = useState<IBuildingsGJSON | null>(null);
-	const [layers, setLayers] = useState<(GeoJsonLayer)[]>([]);
+	const [gjsonLayers, setGjsonLayers] = useState<(GeoJsonLayer)[]>([]);
 	const [viewState, setViewState] = useState({
 		longitude: -73.9855,
 		latitude: 40.758,
@@ -74,7 +77,7 @@ const MapGL: React.FC<MapGLProps> = ({ buildingSelected }) => {
 	useEffect(() => {
 		if (!geoB || geoB.features.length === 0) return;
 
-		setLayers([
+		setGjsonLayers([
 			new GeoJsonLayer({
 				id: "geojson-layer", 
 				data: geoB,
@@ -118,13 +121,102 @@ const MapGL: React.FC<MapGLProps> = ({ buildingSelected }) => {
 		fetchLocation();
 	}, [buildingSelected]);
 
+  type boundCoord = Pair<number, number> | null;
+  const [c1, setC1] = useState<boundCoord>(null);  
+  const [c2, setC2] = useState<boundCoord>(null); 
+  const [pgLayers, setPgLayers] = useState<PolygonLayer[]>([]);
+
+  useEffect(() => {
+    if (!inSelectAreaMode) {
+      setC1(null);
+      setC2(null);
+      return;
+    }
+    
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setC1(null);
+        setC2(null);
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [inSelectAreaMode]);
+
+  useEffect(() => {
+    if (!c1 || !c2) {
+      setPgLayers([]);
+      return;
+    }
+
+    const tl = [Math.min(c1.first, c2.first), Math.max(c1.second, c2.second)];
+    const tr = [Math.max(c1.first, c2.first), Math.max(c1.second, c2.second)];
+    const bl = [Math.min(c1.first, c2.first), Math.min(c1.second, c2.second)];
+    const br = [Math.max(c1.first, c2.first), Math.min(c1.second, c2.second)];
+
+    setPgLayers([
+      new PolygonLayer({
+        id: "select-area-rect",
+        data: [{
+          polygon: [tl, tr, br, bl]
+        }],
+        filled: false,
+        stroked: true,
+        wireframe: true,
+        getPolygon: d => d.polygon,
+        getLineColor: [80, 80, 80],
+        getLineWidth: 15 
+      })
+    ]);
+  }, [c1, c2]);
+
+  const handleMapDragStart = (event: any) => {
+    if (!inSelectAreaMode) return;
+    const [lat, lng] = event.coordinate;
+    setC1(new Pair(lat, lng))
+  };
+
+  const handleMapDrag = (event: any) => {
+    if (!inSelectAreaMode) return;
+    const [lat, lng] = event.coordinate;
+    setC2(new Pair(lat, lng));
+  };
+
+  const handleMapDragEnd = async (event: any) => {
+    if (!inSelectAreaMode) return;
+    const [lat, lng] = event.coordinate;
+    setC2(new Pair(lat, lng));
+
+    if (!c1 || !c2) return;
+
+    const avg = await calculateAverage(Math.min(c1.first, c2.first), Math.max(c1.first, c2.first), Math.min(c1.second, c2.second), Math.max(c1.second, c2.second));
+
+    console.log(avg);
+  };
+
+  const [allLayers, setAllLayers] = useState<(GeoJsonLayer | PolygonLayer)[]>([]);
+  useEffect(() => {
+    let arr = [];
+    for (let i = 0; i < gjsonLayers.length; i++) arr.push(gjsonLayers[i]);
+    for (let i = 0; i < pgLayers.length; i++) arr.push(pgLayers[i]);
+    setAllLayers(arr);
+  }, [gjsonLayers, pgLayers]);
+
 	return (
-		<Box height="100vh" zIndex={-1}>
+		<Box height="100vh" zIndex={1}>
 			<DeckGL
-				layers={layers}
+        onDragStart={handleMapDragStart}
+        onDrag={handleMapDrag}
+        onDragEnd={handleMapDragEnd}
+				layers={allLayers}
 				viewState={viewState}
+				onViewStateChange={e => {
+          if (inSelectAreaMode) return;
 				// @ts-ignore
-				onViewStateChange={e => setViewState(e.viewState)}
+          setViewState(e.viewState);
+        }}
 				controller={true}
 				// @ts-ignore
 				getTooltip={getTooltip}
