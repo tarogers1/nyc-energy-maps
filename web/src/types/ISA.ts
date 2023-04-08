@@ -1,3 +1,3 @@
 export default interface ISA {
-  [index: string]: any;
+  [key: string]: any;
 }
