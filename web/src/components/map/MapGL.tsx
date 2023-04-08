@@ -162,7 +162,8 @@ const MapGL: React.FC<MapGLProps> = ({ buildingSelected, inSelectAreaMode }) => 
         data: [{
           polygon: [tl, tr, br, bl]
         }],
-        filled: false,
+        filled: true,
+        getFillColor: [80, 80, 80, 100],
         stroked: true,
         wireframe: true,
         getPolygon: d => d.polygon,

@@ -55,8 +55,8 @@ const Main: React.FC = () => {
 				/>
 			</Flex>
       <Center position="absolute" zIndex={1} bottom="0" width="100vw" height="5vh">
-        <Button onClick={() => setInSelectAreaMode(prevState => !prevState)}>
-          { !inSelectAreaMode ? 
+        <Button onClick={() => setInSelectAreaMode(prevState => !prevState)} border="2px" borderColor="gray.500" roundedBottom="none">
+          { inSelectAreaMode ? 
             <Box as="p">Exit select area mode</Box>
           :
             <Box as="p">Enter select area mode</Box>
