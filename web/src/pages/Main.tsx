@@ -17,7 +17,9 @@ const Main: React.FC = () => {
 		const fetchNames = async () => { // fetch names for search bar; store bbl and lat, lng for when building is selected
 			const res = await supabase
 				.from("full_table")
-				.select("10_Digit_BBL,Street_Number,Street_Name,Latitude,Longitude");
+				.select("10_Digit_BBL,Street_Number,Street_Name,Latitude,Longitude")
+        .not("Latitude", "is", null) // Must have geojson data available
+        .not("Longitude", "is", null);
 			if (res.error) throw res.error;
 
 			const v: {

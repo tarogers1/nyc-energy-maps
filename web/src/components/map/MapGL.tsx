@@ -39,7 +39,10 @@ const MapGL: React.FC<MapGLProps> = ({ buildingSelected, inSelectAreaMode }) => 
 
 	useEffect(() => {
 		const fetchData = async () => {
-			const res = await supabase.from("full_table").select("*");
+			const res = await supabase
+        .from("full_table")
+        .select("*")
+        .not("GeoBuilding", "is", null);
 			if (res.error) throw res.error;
 			// @ts-ignore
 			setData(res.data);
@@ -168,7 +171,7 @@ const MapGL: React.FC<MapGLProps> = ({ buildingSelected, inSelectAreaMode }) => 
         wireframe: true,
         getPolygon: d => d.polygon,
         getLineColor: [80, 80, 80],
-        getLineWidth: 15 
+        getLineWidth: 13 
       })
     ]);
   }, [c1, c2]);
