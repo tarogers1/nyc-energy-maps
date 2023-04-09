@@ -40,7 +40,7 @@ const FilterBar: React.FC<FilterBarProps> = ({}) => {
 				}}
 			>
 				<Flex direction="column">
-					Hello World!
+          Filter Bar
 				</Flex>
 			</motion.div>
 		</Flex>
