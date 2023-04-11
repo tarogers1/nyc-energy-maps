@@ -1,6 +1,10 @@
 import { IBuildingData } from "../types/IBuildingData";
 import { supabase_client as supabase } from "./client"; 
 
+export interface IAreaInfo {
+  average: number;
+}
+
 export default async function calculateAverage(minLat: number, maxLat: number, minLng: number, maxLng: number) {
   const res = await supabase
     .from("full_table")
@@ -21,5 +25,10 @@ export default async function calculateAverage(minLat: number, maxLat: number, m
   }
 
   const avg = sum / data.length;
-  return avg;
+
+  const ret: IAreaInfo = {
+    average: avg
+  };
+
+  return ret;
 }

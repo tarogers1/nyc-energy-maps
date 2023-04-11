@@ -6,12 +6,12 @@ import { GeoJsonLayer, PolygonLayer } from "@deck.gl/layers/typed";
 import { Box } from "@chakra-ui/react";
 import { mb_config as config } from "../../mapbox/config";
 import { supabase_client as supabase } from "../../supabase/client";
-import colorScale from "../../utils/colorScale";
+import colorScale, { range } from "../../utils/colorScale";
 import getTooltip from "./getTooltip";
 import Pair from "../../utils/Pair";
 import { IBuildingFeature, IBuildingsGJSON } from "../../types/IBuildingsGJSON";
 import { IBuildingData } from "../../types/IBuildingData";
-import calculateAverage from "../../supabase/calculateAverage";
+import calculateAverage, { IAreaInfo } from "../../supabase/calculateAverage";
 
 interface MapGLProps {
 	buildingSelected: number | null;
@@ -174,6 +174,8 @@ const MapGL: React.FC<MapGLProps> = ({ buildingSelected, inSelectAreaMode }) => 
         getLineWidth: 13 
       })
     ]);
+
+
   }, [c1, c2]);
 
   const handleMapDragStart = (event: any) => {
@@ -195,9 +197,37 @@ const MapGL: React.FC<MapGLProps> = ({ buildingSelected, inSelectAreaMode }) => 
 
     if (!c1 || !c2) return;
 
-    const avg = await calculateAverage(Math.min(c1.first, c2.first), Math.max(c1.first, c2.first), Math.min(c1.second, c2.second), Math.max(c1.second, c2.second));
+    const areaInfo: IAreaInfo = await calculateAverage(Math.min(c1.first, c2.first), Math.max(c1.first, c2.first), Math.min(c1.second, c2.second), Math.max(c1.second, c2.second));
 
-    console.log(avg);
+    const tl = [Math.min(c1.first, c2.first), Math.max(c1.second, c2.second)];
+    const tr = [Math.max(c1.first, c2.first), Math.max(c1.second, c2.second)];
+    const bl = [Math.min(c1.first, c2.first), Math.min(c1.second, c2.second)];
+    const br = [Math.max(c1.first, c2.first), Math.min(c1.second, c2.second)];
+
+    const avg = Math.round(areaInfo.average);
+
+    let fillArr = [];
+    for (let i = 0; i < range[avg].length; i++) {
+      fillArr.push(range[avg][i]);
+    }
+    fillArr.push(100);
+
+    setPgLayers([
+      new PolygonLayer({
+        id: "select-area-rect-filled",
+        data: [{
+          polygon: [tl, tr, br, bl]
+        }],
+        filled: true,
+        // @ts-ignore
+        getFillColor: fillArr,
+        stroked: true,
+        wireframe: true,
+        getPolygon: d => d.polygon,
+        getLineColor: [80, 80, 80],
+        getLineWidth: 13 
+      })
+    ]);
   };
 
   const [allLayers, setAllLayers] = useState<(GeoJsonLayer | PolygonLayer)[]>([]);
