@@ -1,5 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { Box, InputGroup, InputLeftElement, InputRightElement, Input, Flex, List, ListItem, Button, Center } from "@chakra-ui/react";
+import { 
+  Box, 
+  InputGroup, 
+  InputLeftElement, 
+  Input, 
+  Flex, 
+  List, 
+  ListItem, 
+  Center 
+} from "@chakra-ui/react";
 import { SearchIcon } from "@chakra-ui/icons";
 import TBuildingName from "../types/TBuildingName";
 import formatAddress from "../utils/formatAddress";
@@ -19,10 +28,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ placeholder, names, setBuildingSe
   const onChange = (event: React.ChangeEvent<HTMLInputElement>) => setText(event.target.value);
   const onFocus = () => setFocused(true);
 
-  let num = () => {
-    return "hello world";
-  };
-
+  // filter data based on text state 
   useEffect(() => {
     const newFilter = names.filter((value: TBuildingName) => {
       const curr = value.first.toLowerCase();
@@ -34,12 +40,11 @@ const SearchBar: React.FC<SearchBarProps> = ({ placeholder, names, setBuildingSe
   }, [text]);
 
   useEffect(() => {
-    if (!focused) {
+    if (!focused) { // if not focused, clear search bar 
       setText("");
       setFilteredData(names);
       return;
     }
-
   }, [focused]);
 
   // Enter key event handler
@@ -59,7 +64,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ placeholder, names, setBuildingSe
 
   // Unfocus when click elsewhere
   useEffect(() => {
-    const handlePointerDown = (event: PointerEvent) => {
+    const handlePointerDown = () => {
       setFocused(false);
     };
 
@@ -68,6 +73,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ placeholder, names, setBuildingSe
     return () => document.removeEventListener("pointerdown", handlePointerDown);
   }, []);
 
+  // handle search icon is clicked
   const handleSearchBtnClicked = () => {
     if (!focused || !filteredData || filteredData.length == 0) return;
     setBuildingSelected(filteredData[0].second.first);
@@ -76,7 +82,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ placeholder, names, setBuildingSe
 
   return (
     <Box userSelect="none" onPointerDown={(event: React.PointerEvent<HTMLDivElement>) => event.stopPropagation()}>
-      <Flex>
+      <Flex direction="row">
         <InputGroup>
           <InputLeftElement children={ <Home size={20} /> } />
           <Input
@@ -93,31 +99,31 @@ const SearchBar: React.FC<SearchBarProps> = ({ placeholder, names, setBuildingSe
             placeholder={placeholder}
           />
         </InputGroup>
-        <Center p="0.5vmax" roundedTopRight="lg" roundedBottomRight="rg" _hover={{ cursor: "pointer" }} backgroundColor="gray.300">
+        <Center p="0.5vmax" roundedTopRight="lg" roundedBottomRight="lg" _hover={{ cursor: "pointer" }} backgroundColor="gray.300" onClick={handleSearchBtnClicked}>
           <SearchIcon w={4} h={4} />
         </Center>
       </Flex>
       <Box>
         { text.length !== 0 && focused &&
-          <>
+          <List border="2px" borderColor="black" rounded="lg" backgroundColor="white" ml="auto" mr="auto" overflow="hidden" overflowY="auto" dropShadow="xl">
             { filteredData.length !== 0 ?
-              <List>
-                { filteredData.slice(0, Math.min(filteredData.length, 1000)).map((value: TBuildingName, key: number) => {
+              <>
+                { filteredData.slice(0, Math.min(filteredData.length, 500)).map((value: TBuildingName, key: number) => {
                   return (
-                    <ListItem key={key} onClick={() => setBuildingSelected(value.second.first)}>
-                      <Box border="2px" borderColor="black">
-                        {formatAddress(value.first)}
-                      </Box>
+                    <ListItem key={key} _hover={{ cursor: "pointer" }} onClick={(event: React.MouseEvent) => {
+                      event.stopPropagation();
+                      setBuildingSelected(value.second.first);
+                      setFocused(false);
+                    }}>
+                      {formatAddress(value.first)}
                     </ListItem>
                   );
                 })}
-              </List>
-              :
-              <List>
-                <ListItem>Not Found</ListItem>
-              </List>
+              </>
+                :
+              <ListItem>Not Found</ListItem>
             }
-          </>
+          </List>
         }
       </Box>
     </Box>
