@@ -39,8 +39,8 @@ const FilterBar: React.FC<FilterBarProps> = ({}) => {
 					top: "0"
 				}}
 			>
-				<Flex direction="column">
-          Filter Bar
+				<Flex direction="column" alignItems="center" justifyContent="space-evenly">
+          <Box as="h1" fontSize="xl" fontWeight="bold">Filter Bar</Box>
 				</Flex>
 			</motion.div>
 		</Flex>

@@ -39,7 +39,7 @@ const Nav: React.FC<NavProps> = ({ routes }) => {
       x : 0    
     },
     closed: {
-      x: -256 // nameTitleWidth = 264
+      x: -250 // nameTitleWidth = 264
     }
   };
 
