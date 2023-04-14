@@ -6,11 +6,12 @@ import About from "./pages/About";
 import NotFound from "./pages/NotFound";
 import Nav from "./components/Nav";
 import Contact from "./pages/Contact";
+import Pair from "./utils/Pair";
 
 const App: React.FC = () => {
 	return (
 		<BrowserRouter>
-			<Nav />
+			<Nav routes={[new Pair("Main", "/"), new Pair("Laws", "/laws"), new Pair("About", "/about"), new Pair("Contact", "/contact")]}/>
 			<Routes>
 				<Route index element={<Main />} />
 				<Route path="/laws" element={<Laws />} />

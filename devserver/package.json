@@ -8,6 +8,9 @@
     "dev": "ts-node-dev --respawn --transpile-only src/index.ts"
   },
   "dependencies": {
+    "@types/koa": "^2.13.6",
+    "@types/koa-json": "^2.0.20",
+    "@types/koa-logger": "^3.1.2",
     "dotenv": "^16.0.3",
     "koa": "^2.14.1",
     "koa-bodyparser": "^4.4.0",
