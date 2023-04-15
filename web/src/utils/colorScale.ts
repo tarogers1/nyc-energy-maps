@@ -12,11 +12,15 @@ const computeRange: (d: number[]) => number[][] = (d: number[]) => {
   for (let i = 0; i < domain.length; i++) {
     const x = domain[i];
     arr.push([
-      50 - cmath.interpolate(x, 1, 100, 0, 50), 
-      cmath.interpolate(x, 1, 100, 50, 255), 
-      150 - cmath.interpolate(x, 1, 100, 0, 150)
+      2 * (255-(x * (255 / 100))),
+      Math.min(2 * (x * 255/ 100), 220),
+      0
+      // 50 - cmath.interpolate(x, 1, 100, 0, 50), 
+      // cmath.interpolate(x, 1, 100, 55, 255), 
+      // 150 - cmath.interpolate(x, 1, 100, 0, 150)
     ]);
   }
+  console.log(cmath.interpolate(50, 1, 100, 255, 55))
 
   return arr;
 };
